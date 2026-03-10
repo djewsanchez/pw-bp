@@ -4,13 +4,15 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Force all actions to run on Node.js 24 -- TEMP
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: lts/*
       - name: Install dependencies
