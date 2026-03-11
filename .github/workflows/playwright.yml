@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master, develop]
+  # push:
+  #   branches: [main, master]
+  # pull_request:
+  #   branches: [main, master, develop]
   workflow_dispatch:
     inputs:
       environment:
@@ -58,22 +58,28 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
-      - name: Update Source Repo Check
-        uses: peter-evans/create-or-update-check@v4
+      - name: Update Source Repo Commit Status
+        if: ${{ always() }}
+        uses: actions/github-script@v7
         with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          owner: ${{ github.event.client_payload.owner }}
-          repo: ${{ github.event.client_payload.repo }}
-          head-sha: ${{ github.event.client_payload.sha }}
-          check-name: "playwright-tests"
-          conclusion: ${{ steps.playwright.outcome }}
-          output-title: "Playwright Test Results"
-          output-summary: "✅ Playwright tests finished. Check automation repo for detailed report."
-          actions: |
-            [
-              {
-                "label": "View Report",
-                "description": "Open Playwright report in automation repo",
-                "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-              }
-            ]
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            const { owner, repo, sha } = github.event.client_payload;
+
+            // Determine test status
+            const state = steps.playwright.outcome === "success" ? "success" : "failure";
+
+            console.log(`Setting status "${state}" on ${owner}/${repo}@${sha}`);
+
+            await github.rest.repos.createCommitStatus({
+              owner: owner,
+              repo: repo,
+              sha: sha,
+              state: state,
+              context: "playwright-tests",
+              description: "Playwright automation result",
+              target_url: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+            });
+      - name: Fail if tests failed
+        if: ${{ steps.playwright.outcome != 'success' }}
+        run: exit 1
