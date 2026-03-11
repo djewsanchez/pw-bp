@@ -70,14 +70,14 @@ jobs:
         run: |
           echo "FAILED" > outcome.txt
         continue-on-error: true
-      - name: Set Test Outcome
+      - name: Set Test Outcome ENV
         run: |
           if [ -f outcome.txt ]; then
             echo "TEST_OUTCOME=failure" >> $GITHUB_ENV
           else
             echo "TEST_OUTCOME=success" >> $GITHUB_ENV
           fi
-            - name: Update Source Repo Status
+      - name: Update Source Repo Status
         if: ${{ always() }}
         uses: actions/github-script@v7
         with:
