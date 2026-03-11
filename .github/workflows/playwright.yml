@@ -4,12 +4,34 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "URL to run tests against"
+        required: true
+        default: https://my-site.com
+  repository_dispatch:
+    types: ["run-my-tests", "run-my-tests-2"]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
+      - name: Starting test automation
+        run: |
+          echo "Environment: $ENVIRONMENT"
+          echo "The github event is: ${{ github.event_name }}"
+          echo "Run Test Here"
+          echo "Below steps in action provide what you have access to use in your scripts as needed"
       - uses: actions/checkout@v5
+        with:
+          # Force a non-shallow checkout, so that we can reference $GITHUB_BASE_REF.
+          # See https://github.com/actions/checkout for more details.
+          fetch-depth: 0
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
+      - name: Debug branches
+        run: git branch -a
       - uses: actions/setup-node@v5
         with:
           node-version: lts/*
@@ -17,8 +39,15 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Run CHANGED Playwright tests
+        run: npx playwright test --only-changed=${{ github.base_ref }}
+        if: github.event_name == 'pull_request'
       - name: Run Playwright tests
         run: npx playwright test
+      - name: Dump GitHub context
+        id: github_context_step
+        # The below prints out all info you have available to use in any reporting or test running from the other repo
+        run: echo '${{ toJSON(github) }}'
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
