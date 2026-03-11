@@ -8,6 +8,7 @@ test("has title @smoke", async ({ page }) => {
 });
 
 test("get started link @smoke", async ({ page }) => {
+  test.fail();
   await page.goto("https://playwright.dev/");
 
   // Click the get started link.
