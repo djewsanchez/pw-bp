@@ -14,25 +14,43 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: false,
-  retries: 0,
-  workers: 1,
-  reporter: [["html"], ["list"]],
-  use: {},
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: [["html"], ["github"], ["list"]],
+  use: {
+    headless: true,
+    // screenshot: "only-on-failure",
+    // video: "retain-on-failure",
+    trace: "retain-on-failure",
+  },
 
   projects: [
+    /* Test against desktop browsers */
     {
-      name: "smoke",
-      grep: /@smoke/,
-      testDir: "./tests",
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
     {
-      name: "regression",
-      grep: /@regression/,
-      testDir: "./tests",
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
     },
     {
-      name: "all",
-      testDir: "./tests",
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
     },
+    // {
+    //   name: "smoke",
+    //   grep: /@smoke/,
+    //   testDir: "./tests",
+    // },
+    // {
+    //   name: "regression",
+    //   grep: /@regression/,
+    //   testDir: "./tests",
+    // },
+    // {
+    //   name: "all",
+    //   testDir: "./tests",
+    // },
   ],
 });
