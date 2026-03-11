@@ -87,7 +87,8 @@ jobs:
             const owner = process.env.SOURCE_OWNER;
             const repo = process.env.SOURCE_REPO;
             const sha = process.env.COMMIT_SHA;
-            const state = steps.playwright.outcome === 'success' ? 'success' : 'failure';
+            const state = process.env.TEST_OUTCOME; // ✅ use env variable
+
             console.log(`Updating ${owner}/${repo}@${sha} status to ${state}`);
 
             await github.rest.repos.createCommitStatus({
