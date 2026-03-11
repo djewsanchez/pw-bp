@@ -52,8 +52,7 @@ jobs:
       #   # The below prints out all info you have available to use in any reporting or test running from the other repo
       #   run: echo '${{ toJSON(github) }}'
       - name: Send result back to source repo
-        if: github.event_name == 'repository_dispatch'
-        if: always() # run even if tests fail
+        if: github.event_name == 'repository_dispatch' && always()
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.PAT_TOKEN }} # must have repo + workflow permissions
