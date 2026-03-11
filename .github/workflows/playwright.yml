@@ -9,6 +9,7 @@ on:
       environment:
         description: "URL to run tests against"
         required: true
+        default: https://my-site.com
       commit_sha:
         description: "SHA from source repo"
         required: true
