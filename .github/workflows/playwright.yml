@@ -89,10 +89,10 @@ jobs:
             const sha = process.env.COMMIT_SHA;
             const state = process.env.TEST_OUTCOME; // ✅ use env variable
 
-            # console.log(`Updating ${owner}/${repo}@${sha} status to ${state}`);
-            console.log(`process.env.GITHUB_SERVER_URL ${process.env.GITHUB_SERVER_URL}`);
-            console.log(`process.env.GITHUB_REPOSITORY ${process.env.GITHUB_REPOSITORY}`);
-            console.log(`process.env.GITHUB_RUN_ID ${process.env.GITHUB_RUN_ID}`);
+            console.log(`Updating ${owner}/${repo}@${sha} status to ${state}`);
+            # console.log(`process.env.GITHUB_SERVER_URL ${process.env.GITHUB_SERVER_URL}`);
+            # console.log(`process.env.GITHUB_REPOSITORY ${process.env.GITHUB_REPOSITORY}`);
+            # console.log(`process.env.GITHUB_RUN_ID ${process.env.GITHUB_RUN_ID}`);
 
             await github.rest.repos.createCommitStatus({
               owner,
