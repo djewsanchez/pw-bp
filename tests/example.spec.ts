@@ -7,10 +7,10 @@ test("has title @smoke", async ({ page }) => {
   await expect(page).toHaveTitle(/Playwright/);
 });
 
-test.fail("get started link - failtest @smoke", async ({ page }) => {
+test("get started link @smoke", async ({ page }) => {
   await page.goto("https://playwright.dev/");
 
-  // Click the get started link.
+  // Click the get started link. -Comment update for checking
   await page.getByRole("link", { name: "Get started" }).click();
 
   // Expects page to have a heading with the name of Installation.
