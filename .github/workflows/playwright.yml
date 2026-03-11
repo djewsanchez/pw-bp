@@ -41,42 +41,39 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Run CHANGED Playwright tests
-        if: github.event_name == 'pull_request'
-        run: npx playwright test --only-changed=${{ github.base_ref }}
+      # - name: Run CHANGED Playwright tests
+      #   if: github.event_name == 'pull_request'
+      #   run: npx playwright test --only-changed=${{ github.base_ref }}
       - name: Run Playwright tests
         id: playwright
         run: npx playwright test
+        continue-on-error: true
       # - name: Dump GitHub context
       #   id: github_context_step
       #   # The below prints out all info you have available to use in any reporting or test running from the other repo
       #   run: echo '${{ toJSON(github) }}'
-      - name: Send result back to source repo
-        if: github.event_name == 'repository_dispatch' && always()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.REPO_ACCESS_TOKEN }} # must have repo + workflow permissions
-          script: |
-            const repo = context.payload.client_payload.repo;
-            const owner = context.payload.client_payload.owner;
-            const sha = context.payload.client_payload.sha;
-
-            // Determine test status
-            const status = steps.playwright.outcome === 'success' ? 'success' : 'failure';
-
-            await github.rest.repos.createCommitStatus({
-              owner: owner,
-              repo: repo,
-              sha: sha,
-              state: status,
-              context: "playwright-tests",
-              description: "Playwright automation result",
-              target_url: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
-              });
-            }"
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+      - name: Update Source Repo Check
+        uses: peter-evans/create-or-update-check@v4
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          owner: ${{ github.event.client_payload.owner }}
+          repo: ${{ github.event.client_payload.repo }}
+          head-sha: ${{ github.event.client_payload.sha }}
+          check-name: "playwright-tests"
+          conclusion: ${{ steps.playwright.outcome }}
+          output-title: "Playwright Test Results"
+          output-summary: "✅ Playwright tests finished. Check automation repo for detailed report."
+          actions: |
+            [
+              {
+                "label": "View Report",
+                "description": "Open Playwright report in automation repo",
+                "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              }
+            ]
