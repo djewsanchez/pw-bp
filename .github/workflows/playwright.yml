@@ -14,6 +14,10 @@ jobs:
           # Force a non-shallow checkout, so that we can reference $GITHUB_BASE_REF.
           # See https://github.com/actions/checkout for more details.
           fetch-depth: 0
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
+      - name: Debug branches
+        run: git branch -a
       - uses: actions/setup-node@v5
         with:
           node-version: lts/*
@@ -22,7 +26,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run CHANGED Playwright tests
-        run: npx playwright test --only-changed=$GITHUB_BASE_REF
+        run: npx playwright test --only-changed=${{ github.base_ref }}
         if: github.event_name == 'pull_request'
       - name: Run Playwright tests
         run: npx playwright test
