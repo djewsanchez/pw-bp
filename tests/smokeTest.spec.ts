@@ -1,7 +1,7 @@
 import { test } from "../utils/fixtures";
 import { expect } from "../utils/custom-expect";
 
-test("GET @regression @smoke", async ({ publicApi }) => {
+test("GET test", { tag: ["@smoke", "@regression"] }, async ({ publicApi }) => {
   const apiResponse = await publicApi
     .path("/posts/1")
     .clearAuth()

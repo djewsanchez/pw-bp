@@ -38,19 +38,19 @@ export default defineConfig({
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
     },
-    // {
-    //   name: "smoke",
-    //   grep: /@smoke/,
-    //   testDir: "./tests",
-    // },
-    // {
-    //   name: "regression",
-    //   grep: /@regression/,
-    //   testDir: "./tests",
-    // },
-    // {
-    //   name: "all",
-    //   testDir: "./tests",
-    // },
+    {
+      name: "smoke",
+      grep: /@smoke/,
+      testDir: "./tests",
+    },
+    {
+      name: "regression",
+      grep: /@regression/,
+      testDir: "./tests",
+    },
+    {
+      name: "all",
+      testDir: "./tests",
+    },
   ],
 });
