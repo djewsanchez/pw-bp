@@ -92,7 +92,7 @@ jobs:
             console.log(`Updating ${owner}/${repo}@${sha} status to ${state}`);
 
             await github.rest.repos.createCommitStatus({
-              owner,
+              "",
               repo,
               sha,
               state,
