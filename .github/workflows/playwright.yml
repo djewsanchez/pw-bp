@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          # Force a non-shallow checkout, so that we can reference $GITHUB_BASE_REF.
+          # See https://github.com/actions/checkout for more details.
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: lts/*
@@ -17,6 +21,9 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Run CHANGED Playwright tests
+        run: npx playwright test --only-changed=$GITHUB_BASE_REF
+        if: github.event_name == 'pull_request'
       - name: Run Playwright tests
         run: npx playwright test
       - uses: actions/upload-artifact@v6
