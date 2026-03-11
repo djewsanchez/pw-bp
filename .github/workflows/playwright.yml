@@ -50,7 +50,6 @@ jobs:
       - name: Run Playwright tests
         id: playwright
         run: npx playwright test
-        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
