@@ -101,7 +101,7 @@ jobs:
               state,
               context: "playwright-tests",
               description: "Playwright automation result",
-              target_url: `${process.env.GITHUB_SERVER_URL}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID}`
+              target_url: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
             });
       - name: Fail if Playwright tests failed
         if: ${{ steps.playwright.outcome != 'success' }}
