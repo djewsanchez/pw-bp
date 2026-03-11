@@ -55,7 +55,7 @@ jobs:
         if: github.event_name == 'repository_dispatch' && always()
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.PAT_TOKEN }} # must have repo + workflow permissions
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }} # must have repo + workflow permissions
           script: |
             const repo = context.payload.client_payload.repo;
             const owner = context.payload.client_payload.owner;
